@@ -1,1 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinosaur Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+
+        .game-container {
+            position: relative;
+            width: 600px;
+            height: 300px;
+            background-color: #f7f7f7;
+            border: 1px solid #ccc;
+        }
+
+        .dinosaur {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 40px;
+            height: 50px;
+            background-color: #4CAF50;
+        }
+
+        .obstacle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 50px;
+            background-color: #f44336;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="dinosaur" id="dinosaur"></div>
+        <div class="obstacle" id="obstacle"></div>
+        <span id="score">0</span>
+    </div>
+    <script>
+        const dinosaur = document.getElementById('dinosaur');
+        const obstacle = document.getElementById('obstacle');
+        const scoreElement = document.getElementById('score');
+
+        let score = 0;
+        let obstaclePosition = 600; // Initial position of obstacle
+        let isJumping = false;
+
+        // Function to jump
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                let jumpCount = 0;
+                let jumpInterval = setInterval(() => {
+                    let currentPosition = parseInt(window.getComputedStyle(dinosaur).getPropertyValue('bottom'));
+                    if (currentPosition >= 150) {
+                        // Reached maximum jump height
+                        clearInterval(jumpInterval);
+                        let downInterval = setInterval(() => {
+                            currentPosition -= 10;
+                            dinosaur.style.bottom = currentPosition + 'px';
+                            if (currentPosition <= 0) {
+                                clearInterval(downInterval);
+                                isJumping = false;
+                            }
+                        }, 20);
+                    } else {
+                        // Jump up
+                        currentPosition += 10;
+                        dinosaur.style.bottom = currentPosition + 'px';
+                    }
+                }, 20);
+            }
+        }
+
+        // Function to move obstacle
+        function moveObstacle() {
+            obstaclePosition -= 10;
+            obstacle.style.right = obstaclePosition + 'px';
+
+            if (obstaclePosition <= -20) {
+                obstaclePosition = 600;
+                score++;
+                scoreElement.textContent = score;
+            }
+
+            // Check collision
+            if (obstaclePosition < 90 && obstaclePosition > 0 && parseInt(window.getComputedStyle(dinosaur).getPropertyValue('bottom')) <= 50) {
+                alert('Game Over! Your score: ' + score);
+                score = 0;
+                scoreElement.textContent = score;
+            }
+        }
+
+        // Event listener for space key to jump
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                jump();
+            }
+        });
+
+        // Game loop
+        setInterval(moveObstacle, 50);
+    </script>
+</body>
+</html>
 
