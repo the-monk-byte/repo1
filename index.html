@@ -1,125 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dinosaur Game</title>
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f7f7f7;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
 
-    .game-container {
-        position: relative;
-        width: 600px;
-        height: 300px;
-        background-color: #f7f7f7;
-        border: 1px solid #ccc;
-    }
+        .converter {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-    .dinosaur {
-        position: absolute;
-        bottom: 0;
-        left: 50px;
-        width: 40px;
-        height: 50px;
-        background-color: #4CAF50;
-    }
+        .converter input {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-    .obstacle {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 20px;
-        height: 50px;
-        background-color: #f44336;
-    }
+        .converter select {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-    #score {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 24px;
-        font-weight: bold;
-    }
-</style>
+        .convert-arrow {
+            font-size: 20px;
+            margin: 0 10px;
+        }
+
+        #convertedAmount {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div class="game-container">
-    <div class="dinosaur" id="dinosaur"></div>
-    <div class="obstacle" id="obstacle"></div>
-    <span id="score">0</span>
-</div>
-<script>
-    const dinosaur = document.getElementById('dinosaur');
-    const obstacle = document.getElementById('obstacle');
-    const scoreElement = document.getElementById('score');
+    <h1>Currency Converter</h1>
+    <div class="converter">
+        <input type="number" id="amount" placeholder="Enter amount">
+        <select id="fromCurrency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            </select>
+        <span class="convert-arrow">&#8595;</span>
+        <select id="toCurrency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            </select>
+        <button id="convertButton">Convert</button>
+        <p id="convertedAmount"></p>
+    </div>
+    <script>
+        const amountInput = document.getElementById('amount');
+        const fromCurrencySelect = document.getElementById('fromCurrency');
+        const toCurrencySelect = document.getElementById('toCurrency');
+        const convertButton = document.getElementById('convertButton');
+        const convertedAmountDisplay = document.getElementById('convertedAmount');
 
-    let score = 0;
-    let obstaclePosition = 600; // Initial position of obstacle
-    let isJumping = false;
-
-    // Function to jump
-    function jump() {
-        if (!isJumping) {
-            isJumping = true;
-            let jumpCount = 0;
-            let jumpInterval = setInterval(() => {
-                let currentPosition = parseInt(window.getComputedStyle(dinosaur).getPropertyValue('bottom'));
-                if (currentPosition >= 150) {
-                    // Reached maximum jump height
-                    clearInterval(jumpInterval);
-                    let downInterval = setInterval(() => {
-                        currentPosition -= 10;
-                        dinosaur.style.bottom = currentPosition + 'px';
-                        if (currentPosition <= 0) {
-                            clearInterval(downInterval);
-                            isJumping = false;
-                        }
-                    }, 20);
-                } else {
-                    // Jump up
-                    currentPosition += 10;
-                    dinosaur.style.bottom = currentPosition + 'px';
-                }
-            }, 20);
-        }
-    }
-
-    // Function to move obstacle
-    function moveObstacle() {
-        obstaclePosition -= 10;
-        obstacle.style.right = obstaclePosition + 'px';
-
-        if (obstaclePosition <= -20) {
-            obstaclePosition = 600;
-            score++;
-            scoreElement.textContent = score;
+        // Function to fetch exchange rate (replace with your own API call or logic)
+        function fetchExchangeRate(from, to) {
+          // Replace with a real API call or logic to fetch exchange rate
+          // This example just returns a fixed value for demonstration
+          if (from === 'USD' && to === 'EUR') {
+            return 0.9;
+          } else if (from === 'EUR' && to === 'USD') {
+            return 1.1;
+          } else {
+            return 1; // Assume same currency for now
+          }
         }
 
-        // Check collision
-        if (obstaclePosition < 90 && obstaclePosition > 0 && parseInt(window.getComputedStyle(dinosaur).getPropertyValue('bottom')) <= 50) {
-            alert('Game Over! Your score: ' + score);
-            score = 0;
-            scoreElement.textContent = score;
-        }
-    }
-
-    // Event listener for space key to jump
-    document.addEventListener('keydown', (event) => {
-        if (event.code === 'Space') {
-            jump();
-        }
-    });
-
-    // Game loop
-    setInterval(moveObstacle, 50);
-</script>
+        convertButton.addEventListener('click', () => {
+          const amount = amountInput.value;
+          const fromCurrency = fromCurrencySelect.value;
+          const toCurrency = toCurrencySelect.value;
+          
+          if (amount && fromCurrency !== toCurrency) {
+            const exchangeRate = fetchExchangeRate(fromCurrency, toCurrency);
+            const convertedAmount = amount * exchangeRate;
+            convertedAmountDisplay.textContent = `${amount} ${fromCurrency} is equal to ${convertedAmount.toFixed(2)} ${toCurrency}`;
+          } else {
+            convertedAmountDisplay.textContent = 'Please enter a valid amount and select different currencies.';
+          }
+        });
+    </script>
 </body>
 </html>
